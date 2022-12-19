@@ -72,7 +72,7 @@ writer = SummaryWriter('./tensorboard_logs/{}'.format(args.run_name))
 os.environ["OMP_NUM_THREADS"] = "1"
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = args.GPU_id
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda') # if torch.cuda.is_available() else 'cpu')
 
 torch.manual_seed(args.random_seed)
 torch.backends.cudnn.deterministic = True
@@ -206,6 +206,7 @@ best_test_acc = 0.
 for epoch in tqdm(range(args.epoch_num)):
     start_time = time.time()
     # ipdb.set_trace()
+    model = model.to(device)
     train_loss, train_acc = train(model, train_iterator, optimizer, criterion)
     test_loss, test_acc = evaluate(model, test_iterator, criterion)
     
@@ -247,7 +248,7 @@ for epoch in tqdm(range(args.epoch_num)):
             res = dict()
             watcher = ww.WeightWatcher(model = model)
             if epoch % 10:
-                details = watcher.analyze(vectors=False, plot=True, savefig=ROOT, fix_fingers=False, fit='PL',sample_evals=args.sample_evals)
+                details = watcher.analyze(vectors=False, plot=True, savefig=ROOT+'/epoch{}'.format(epoch), fix_fingers=False, fit='PL',sample_evals=args.sample_evals)
             else:
                 details = watcher.analyze(vectors=False, fix_fingers=False, fit='PL',sample_evals=args.sample_evals)
             details.to_csv(ROOT+'details.csv')
@@ -305,8 +306,8 @@ for epoch in tqdm(range(args.epoch_num)):
                 elif args.average == 'log':
                     alpha_all = np.log(alpha_all)
                 alpha_all_weighted = alpha_all/np.sum(alpha_all)
-                for i in range(1,n):
-                    para_copy.append({'params': net_para1[i-1],
+                for i in range(0,n):
+                    para_copy.append({'params': net_para1[i],
                                         'lr': get_lr(epoch, args.lr, args.epoch_num) * n * alpha_all_weighted[i],})
             
             else:

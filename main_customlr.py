@@ -304,7 +304,7 @@ for epoch in tqdm(range(args.epoch_num)):
                 elif args.average == 'log':
                     alpha_all = np.log(alpha_all)
                 alpha_all_weighted = alpha_all/np.sum(alpha_all)
-                for i in range(1,n):
+                for i in range(0,n):
                     para_copy.append({'params': net_para1[i],
                                         'lr': get_custom_lr(epoch,WARMUP_STEPS,args.nemb) * n * alpha_all_weighted[i],})
             

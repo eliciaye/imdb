@@ -21,5 +21,8 @@ def epoch_time(start_time, end_time):
     elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
     return elapsed_mins, elapsed_secs
 
+def get_custom_lr(step, warmup, model_size):
+    return model_size ** (-0.5) * min((step+1) ** (-0.5), (step+1) * warmup ** (-1.5))
+
 def get_lr(epoch, init_lr, T_max):
     return 0.5 * init_lr * (1 + np.cos(epoch / T_max * np.pi))
